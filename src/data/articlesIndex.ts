@@ -363,7 +363,7 @@ export function getSkeletonArticle(day: number, metadata: ArticleMetadata): Arti
     ],
     externalLinks: [
       { anchor: "Boudhanath Stupa UNESCO Site", url: "https://whc.unesco.org/en/list/121" },
-      { anchor: "Utpala TripAdvisor Page", url: "https://www.tripadvisor.com" }
+      { anchor: "Utpala TripAdvisor Page", url: "https://www.tripadvisor.com/Restaurant_Review-g293890-d12217686-Reviews-Utpala_Cafe-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html/Restaurant_Review-g293890-d12217686-Reviews-Utpala_Cafe-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html" }
     ],
     outreachTargets: [
       { name: "Kathmandu Tourism Media", reason: `Pitching our comprehensive guide for local search: ${metadata.primaryKeyword}` },

@@ -40,6 +40,7 @@ const IMAGE_PATHS = {
 };
 
 export default function App() {
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
   const [activeDay, setActiveDay] = useState<number>(1);
   const [articles, setArticles] = useState<{ [key: number]: Article }>({});
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -82,7 +83,7 @@ export default function App() {
   }, []);
 
   // Automated business profile citation fetching
-  const loadCitation = async (platform: 'google' | 'tripadvisor' | 'happycow') => {
+  const loadCitation = async (platform: 'google' | 'tripadvisor' | 'happycow', useAI: boolean = false) => {
     setIsGeneratingCitation(true);
     setCitationError(null);
     try {
@@ -98,7 +99,8 @@ export default function App() {
           secondaryKeywords: activeMeta.secondaryKeywords,
           metaDescription: activeMeta.metaDescription,
           day: activeMeta.day,
-          directory: platform
+          directory: platform,
+          useAI
         })
       });
       const data = await res.json();
@@ -114,10 +116,10 @@ export default function App() {
     }
   };
 
-  // Load custom directory quotation whenever active day or chosen platform changes
+  // Load custom directory quotation whenever active day or chosen platform changes (with default programmatic templates)
   useEffect(() => {
     if (activeDay) {
-      loadCitation(activeCitationPlatform);
+      loadCitation(activeCitationPlatform, false);
     }
   }, [activeDay, activeCitationPlatform]);
 
@@ -960,8 +962,33 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Mobile Top Header */}
+      <div className="lg:hidden flex items-center justify-between px-5 py-4 bg-[#0D0D0D] border-b border-white/10 shrink-0 z-40">
+        <div className="text-[#F27D26] font-display font-bold text-lg tracking-tighter uppercase flex items-center space-x-2">
+          <Compass className="h-5 w-5 text-[#F27D26] animate-pulse" />
+          <span>Utpala Engine</span>
+        </div>
+        <button 
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          className="bg-white/5 hover:bg-white/10 hover:text-white text-gray-300 font-mono text-[10px] uppercase tracking-wider font-bold px-3 py-2 rounded-lg border border-white/10 cursor-pointer flex items-center space-x-1.5 transition-colors"
+        >
+          <span>{isMobileSidebarOpen ? "✕ Close" : "☰ 30-Day Planner"}</span>
+        </button>
+      </div>
+
+      {/* Mobile Dim Overlay when drawer is active */}
+      {isMobileSidebarOpen && (
+        <div 
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="lg:hidden fixed inset-0 bg-black/60 z-40 transition-opacity"
+        />
+      )}
+
       {/* LEFT SIDEBAR: 30-Day Content Planner & Keywords Manager */}
-      <aside className="w-full lg:w-80 border-r border-white/10 flex flex-col bg-[#0D0D0D] shrink-0 h-auto lg:h-full overflow-hidden">
+      <aside className={`
+        ${isMobileSidebarOpen ? 'flex fixed inset-y-0 left-0 z-50 w-[85%] sm:w-80 border-r border-white/10 shadow-2xl h-full' : 'hidden lg:flex lg:w-80'} 
+        flex-col bg-[#0D0D0D] shrink-0 lg:h-full overflow-hidden transition-all duration-300
+      `}>
         
         {/* Sidebar Brand Header */}
         <div className="p-6 border-b border-white/10">
@@ -1054,6 +1081,7 @@ export default function App() {
                     onClick={() => {
                       setActiveDay(meta.day);
                       setIsEditing(false);
+                      setIsMobileSidebarOpen(false);
                     }}
                     title={`Day ${meta.day}: ${meta.title}\nStatus: ${status}\nSEO Score: ${score}%`}
                     className={`relative w-9 h-9 flex items-center justify-center rounded-md transition-all outline-none ${
@@ -1134,6 +1162,7 @@ export default function App() {
                   onClick={() => {
                     setActiveDay(meta.day);
                     setIsEditing(false);
+                    setIsMobileSidebarOpen(false);
                   }}
                   className={`p-3 rounded-md transition-all cursor-pointer text-left border ${
                     isActive
@@ -1192,7 +1221,7 @@ export default function App() {
       </aside>
 
       {/* CORE WORKSPACE: High-contrast rich editor & data grid interface */}
-      <section className="flex-1 flex flex-col bg-[#FDFCFB] text-[#1A1A1B] overflow-hidden">
+      <section className="flex-1 flex flex-col bg-[#FDFCFB] text-[#1A1A1B] lg:overflow-hidden overflow-y-auto">
         
         {/* Workspace banner containing key metrics and action parameters */}
         <header className="p-6 border-b border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center bg-white gap-4 shrink-0">
@@ -1334,10 +1363,10 @@ export default function App() {
         </div>
 
         {/* WORKSPACE DOUBLE GRID DIVISION */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden h-full">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 lg:overflow-hidden h-auto lg:h-full">
           
           {/* Main Primary Viewport for content */}
-          <div className="col-span-1 lg:col-span-8 p-6 lg:p-8 bg-white overflow-y-auto h-full space-y-6">
+          <div className="col-span-1 lg:col-span-8 p-6 lg:p-8 bg-white lg:overflow-y-auto h-auto lg:h-full space-y-6">
             <AnimatePresence mode="wait">
               
               {/* Tab 1: Markdown Editor or Reader */}
@@ -1695,12 +1724,12 @@ export default function App() {
                                 <span>Copy profile</span>
                               </button>
                               <button
-                                onClick={() => loadCitation(activeCitationPlatform)}
+                                onClick={() => loadCitation(activeCitationPlatform, true)}
                                 className="bg-[#F27D26]/10 hover:bg-[#F27D26]/20 text-[#F27D26] font-mono font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all border border-[#F27D26]/25 cursor-pointer flex items-center space-x-1.5"
-                                title="Regenerate with custom factors or active changes"
+                                title="Optimize with live Gemini model generation"
                               >
                                 <Sparkles className="h-3 w-3 animate-pulse" />
-                                <span>Re-Optimize</span>
+                                <span>Optimize with AI</span>
                               </button>
                             </div>
                           </div>
@@ -2340,7 +2369,7 @@ export default function App() {
           </div>
 
           {/* Side Secondary Panel Widget Column */}
-          <aside className="col-span-1 lg:col-span-4 bg-[#FAF9F6] border-t lg:border-t-0 lg:border-l border-gray-200 p-6 space-y-6 overflow-y-auto h-full">
+          <aside className="col-span-1 lg:col-span-4 bg-[#FAF9F6] border-t lg:border-t-0 lg:border-l border-gray-200 p-6 space-y-6 lg:overflow-y-auto h-auto lg:h-full">
             
             {/* Widget 1: Keywords Manager */}
             <div>

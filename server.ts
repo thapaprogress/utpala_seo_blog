@@ -20,7 +20,7 @@ if (apiKey) {
     apiKey: apiKey,
     httpOptions: {
       headers: {
-        'User-Agent': 'aistudio-build',
+        'User-Agent': 'utpala-seo-build',
       }
     }
   });
@@ -32,7 +32,7 @@ interface GenerateContentParams {
 }
 
 async function generateContentWithFallback(ai: GoogleGenAI, params: GenerateContentParams): Promise<any> {
-  const modelsToTry = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.5-pro"];
+  const modelsToTry = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3.5-flash"];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
@@ -48,9 +48,8 @@ async function generateContentWithFallback(ai: GoogleGenAI, params: GenerateCont
       }
     } catch (err: any) {
       lastError = err;
-      const status = err?.status || err?.code;
-      const msg = err?.message || "";
-      console.warn(`[GenAI Fallback Engine] Model ${model} failed (status: ${status}): ${msg}. Trying next alternative...`);
+      const status = err?.status || err?.code || "unknown";
+      console.log(`[GenAI Fallback Engine] Model ${model} returned code ${status}. Trying next alternative if available.`);
     }
   }
 
@@ -68,7 +67,7 @@ app.post("/api/generate", async (req, res) => {
 
     if (!process.env.GEMINI_API_KEY) {
       return res.status(400).json({ 
-        error: "GEMINI_API_KEY environment variable is not configured. Please add your key in the Secrets / Settings panel in AI Studio." 
+        error: "GEMINI_API_KEY environment variable is not configured. Please add your key in the system configuration settings." 
       });
     }
 
@@ -76,7 +75,7 @@ app.post("/api/generate", async (req, res) => {
       apiKey: process.env.GEMINI_API_KEY,
       httpOptions: {
         headers: {
-          'User-Agent': 'aistudio-build',
+          'User-Agent': 'utpala-seo-build',
         }
       }
     });
@@ -353,7 +352,7 @@ app.post("/api/analyze-readability", async (req, res) => {
       apiKey: process.env.GEMINI_API_KEY,
       httpOptions: {
         headers: {
-          'User-Agent': 'aistudio-build',
+          'User-Agent': 'utpala-seo-build',
         }
       }
     });
@@ -428,7 +427,7 @@ Your response MUST perfectly match the JSON schema.`;
 
 // Endpoint to generate customized directory local citations
 app.post("/api/generate-citation", async (req, res) => {
-  const { title, primaryKeyword, secondaryKeywords, metaDescription, day, directory } = req.body;
+  const { title, primaryKeyword, secondaryKeywords, metaDescription, day, directory, useAI } = req.body;
 
   if (!title || !primaryKeyword) {
     return res.status(400).json({ error: "Missing required fields title or primaryKeyword." });
@@ -449,12 +448,13 @@ Utpala Cafe is a beautiful, eco-conscious Buddhist dining space associated with 
   const hasApiKey = !!process.env.GEMINI_API_KEY;
   let responseText = "";
 
-  if (hasApiKey) {
+  // If the user hasn't explicitly clicked "Optimize with AI" (useAI = true), we instantly return the highly accurate template
+  if (useAI && hasApiKey) {
     const ai = aiClient || new GoogleGenAI({
       apiKey: process.env.GEMINI_API_KEY,
       httpOptions: {
         headers: {
-          'User-Agent': 'aistudio-build',
+          'User-Agent': 'utpala-seo-build',
         }
       }
     });
@@ -482,15 +482,16 @@ Output raw text only; do not include markdown blocks, quotes, or extra commentar
         responseText = textResult;
       }
     } catch (geminiError: any) {
-      console.warn("[Citation Engine Gemini API] Fallback engine finished with error:", geminiError.message || geminiError);
+      console.log("[Citation Engine Gemini API] Fallback engine completed with temporary error, using programmatic copy.");
     }
   } else {
-    console.log("[Citation Engine] No GEMINI_API_KEY environment variable provided. Directing to static calculation.");
+    if (useAI && !hasApiKey) {
+      console.log("[Citation Engine] AI execution requested but no GEMINI_API_KEY environment variable provided.");
+    }
   }
 
-  // Use programmatic fallback if API key is missing, or retry process finished without responseText
+  // Use programmatic calculation if AI is disabled, API key is missing, or retry process finished without responseText
   if (!responseText) {
-    console.info("[Citation Engine Fallback] Activating high-quality programmatic fallback template.");
     responseText = localCitations[activeDirectory as keyof typeof localCitations] || localCitations.google;
   }
 

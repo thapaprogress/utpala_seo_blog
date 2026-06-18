@@ -308,6 +308,207 @@ export const calendarMetadata: ArticleMetadata[] = [
     urlSlug: "/plan-your-perfect-visit-utpala-cafe-boudha",
     readingTime: "18 min read",
     type: "CTA/Summary"
+  },
+  // Nepal Vegetarian Expansion Campaigns (Days 31 - 50)
+  {
+    day: 31,
+    title: "Best Vegetarian Restaurants in Kathmandu for Traditional Nepali Cuisine",
+    primaryKeyword: "best vegetarian restaurants in Kathmandu",
+    secondaryKeywords: ["traditional Nepali cuisine", "organic vegetarian set", "Boudha Nepalese hospitality", "pure veg restaurant Nepal"],
+    metaDescription: "Discover the best vegetarian restaurants in Kathmandu for traditional Nepali cuisine. Explore Utpala Cafe's pure and authentic flavors.",
+    urlSlug: "/best-vegetarian-restaurants-kathmandu-traditional-nepali-cuisine",
+    readingTime: "15 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 32,
+    title: "Order Vegetarian Thali Online in Nepal with Home Delivery",
+    primaryKeyword: "order vegetarian thal online",
+    secondaryKeywords: ["vegetarian home delivery Kathmandu", "Nepalese thali delivery", "pure organic meals at home", "best online dining Nepal"],
+    metaDescription: "Craving healthy food? Order vegetarian thali online in Nepal with swift home delivery. Fresh organic meals made by Utpala Cafe.",
+    urlSlug: "/order-vegetarian-thali-online-nepal-home-delivery",
+    readingTime: "14 min read",
+    type: "Transactional Intent"
+  },
+  {
+    day: 33,
+    title: "Top 5 Vegetarian Cooking Classes in Nepal Compared by Price and Reviews",
+    primaryKeyword: "vegetarian cooking classes in Nepal",
+    secondaryKeywords: ["Nepali culinary class price", "traditional cooking learning", "Kathmandu culinary training", "best organic culinary school"],
+    metaDescription: "Learn traditional culinary arts. Compare the top 5 vegetarian cooking classes in Nepal by price and student reviews.",
+    urlSlug: "/top-5-vegetarian-cooking-classes-nepal-price-reviews",
+    readingTime: "16 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 34,
+    title: "The Best Vegetarian Cookbooks Written by Famous Nepali Chefs",
+    primaryKeyword: "vegetarian cookbooks",
+    secondaryKeywords: ["Nepali chef recipes", "traditional Nepalese cookbooks", "plant based eating guides", "monastery kitchen values"],
+    metaDescription: "Master local cooking at home. Our expert roundup of the best vegetarian cookbooks written by pioneering Nepali chefs.",
+    urlSlug: "/best-vegetarian-cookbooks-nepali-chefs",
+    readingTime: "15 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 35,
+    title: "Complete Guide to Vegetarian Meal Kit Delivery Services Available in Nepal",
+    primaryKeyword: "vegetarian meal kit delivery",
+    secondaryKeywords: ["healthy meal subscription Nepal", "prepped organic ingredients", "vegan meal plans Kathmandu", "farm to table delivery"],
+    metaDescription: "Streamline your healthy eating options. Explore the top vegetarian meal kit delivery services available in Nepal.",
+    urlSlug: "/vegetarian-meal-kit-delivery-services-nepal",
+    readingTime: "15 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 36,
+    title: "Discover 10 Popular Vegetarian Dishes in Traditional Nepali Culture",
+    primaryKeyword: "popular vegetarian dishes",
+    secondaryKeywords: ["Nepali cultural food", "traditional vegetarian sets", "gundruk dhedo recipe", "pure fasting offerings Nepal"],
+    metaDescription: "Indulge in rich culinary history. Uncover 10 popular vegetarian dishes in Nepali culture, from festive delicacies to street food favorites.",
+    urlSlug: "/popular-vegetarian-dishes-nepali-culture",
+    readingTime: "14 min read",
+    type: "Informational Intent"
+  },
+  {
+    day: 37,
+    title: "The Best Vegetarian Catering Services in Kathmandu for Elegant Events",
+    primaryKeyword: "vegetarian catering services in Kathmandu",
+    secondaryKeywords: ["wedding catering Kathmandu", "corporate organic events Nepal", "hygienic party food catering", "Boudha event catering"],
+    metaDescription: "Plan your special day with perfect, hygienic food. See the best vegetarian catering services in Kathmandu for weddings and events.",
+    urlSlug: "/best-vegetarian-catering-services-kathmandu-events",
+    readingTime: "16 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 38,
+    title: "Top Vegan and Vegetarian Grocery Stores in Nepal with Home Delivery",
+    primaryKeyword: "vegetarian grocery stores",
+    secondaryKeywords: ["vegan home delivery Nepal", "organic market Kathmandu", "buy vegetarian ingredients online", "plant based groceries stupa"],
+    metaDescription: "Stock your kitchen with organic items. Top vegan and vegetarian grocery stores in Nepal offering hassle-free home delivery.",
+    urlSlug: "/top-vegan-vegetarian-grocery-stores-nepal-home-delivery",
+    readingTime: "15 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 39,
+    title: "Best Vegetarian Restaurant Apps in Nepal – User Ratings and Features Compared",
+    primaryKeyword: "vegetarian restaurant apps",
+    secondaryKeywords: ["food delivery app Nepal", "find vegetarian food online", "best app rankings Kathmandu", "dining helper tools Nepal"],
+    metaDescription: "Find your next meal instantly. We compare the best vegetarian restaurant apps in Nepal based on real user reviews and features.",
+    urlSlug: "/best-vegetarian-restaurant-apps-nepal-features-compared",
+    readingTime: "15 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 40,
+    title: "How to Start a Highly Successful Vegetarian Food Business in Nepal",
+    primaryKeyword: "start a vegetarian food business",
+    secondaryKeywords: ["investment in Nepal food sector", "organic restaurant planning", "government license catering Kathmandu", "Boudha cafe startup guide"],
+    metaDescription: "Turn your culinary passion into a thriving startup. Learn how to successfully plan and start a vegetarian food business in Nepal.",
+    urlSlug: "/how-to-start-vegetarian-food-business-nepal",
+    readingTime: "17 min read",
+    type: "Informational Intent"
+  },
+  {
+    day: 41,
+    title: "Must-Have Affordable Vegetarian Cooking Appliances Available in Nepal",
+    primaryKeyword: "vegetarian cooking appliances",
+    secondaryKeywords: ["cheap kitchen gadgets Nepal", "best mixer grinder price Kathmandu", "induction cooktops Nepal", "organic meal helpers"],
+    metaDescription: "Equip your home kitchen for healthy meals. Our ultimate guide to affordable vegetarian cooking appliances available in Nepal.",
+    urlSlug: "/affordable-vegetarian-cooking-appliances-nepal",
+    readingTime: "14 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 42,
+    title: "Book a Serene Vegetarian Food Tour in Pokhara – Affordable Packages",
+    primaryKeyword: "vegetarian food tour in Pokhara",
+    secondaryKeywords: ["Pokhara tourist packages", "lakeside healthy food tour", "organic farms tour Nepal", "best culinary walks Pokhara"],
+    metaDescription: "Experience the ultimate culinary travel. Book an organic vegetarian food tour in Pokhara with our highly affordable local packages.",
+    urlSlug: "/book-vegetarian-food-tour-pokhara-packages",
+    readingTime: "15 min read",
+    type: "Transactional Intent"
+  },
+  {
+    day: 43,
+    title: "The Best Vegetarian-Friendly Hotels with Organic Restaurants in Nepal",
+    primaryKeyword: "vegetarian-friendly hotels",
+    secondaryKeywords: ["resorts in Nepal for vegans", "Kathmandu wellness hotels", "Boudha Buddhist stays", "ethical traveler lodging"],
+    metaDescription: "Enjoy safe, ethical, and delicious dining on your travels. Here are the best vegetarian-friendly hotels with top-rated restaurants in Nepal.",
+    urlSlug: "/best-vegetarian-friendly-hotels-restaurants-nepal",
+    readingTime: "16 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 44,
+    title: "The Hidden Nutritional Benefits of Traditional Nepali Vegetarian Diets",
+    primaryKeyword: "nutritional benefits of traditional Nepali vegetarian diets",
+    secondaryKeywords: ["gundruk health advantages", "dal bhat nutrition facts", "monastic wellness lifestyle", "plant protein sources Nepal"],
+    metaDescription: "Learn how centuries-old healthy eating benefits your body. The science and nutritional benefits of traditional Nepali vegetarian diets.",
+    urlSlug: "/nutritional-benefits-traditional-nepali-vegetarian-diets",
+    readingTime: "15 min read",
+    type: "Informational Intent"
+  },
+  {
+    day: 45,
+    title: "Compare the Top Nepali Vegetarian Cooking Websites for Recipes and Tips",
+    primaryKeyword: "Nepali vegetarian cooking websites",
+    secondaryKeywords: ["cooking blogs Nepal", "best vegetarian recipes online", "traditional culinary sites", "how to cook dal bhat"],
+    metaDescription: "Find your next meal inspiration. We compare the top Nepali vegetarian cooking websites for detailed recipes and expert tips.",
+    urlSlug: "/compare-top-nepali-vegetarian-cooking-websites",
+    readingTime: "15 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 46,
+    title: "Best Online Platforms to Learn Vegetarian Cooking in Nepali Language",
+    primaryKeyword: "learn vegetarian cooking",
+    secondaryKeywords: ["Nepali cooking channels", "online vegetarian education", "YouTube culinary classes Nepal", "traditional recipe tutorials"],
+    metaDescription: "Sharpen your cooking skills in your native tongue. Discover the best online platforms to learn vegetarian cooking in the Nepali language.",
+    urlSlug: "/best-online-platforms-learn-vegetarian-cooking-nepali",
+    readingTime: "14 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 47,
+    title: "Discover Seasonal Vegetables Widely Used in Nepali Vegetarian Cuisine",
+    primaryKeyword: "seasonal vegetables",
+    secondaryKeywords: ["Nepali local produce guide", "organic vegetables Kathmandu", "winter crops Nepal cook", "monastic seasonal eating"],
+    metaDescription: "Eat fresh, live healthy. Discover the traditional seasonal vegetables widely used in Nepali vegetarian cuisine and where to get them.",
+    urlSlug: "/seasonal-vegetables-nepali-vegetarian-cuisine",
+    readingTime: "15 min read",
+    type: "Informational Intent"
+  },
+  {
+    day: 48,
+    title: "Find the Best Vegetarian Meal Prep Services in Nepal with Subscription Options",
+    primaryKeyword: "vegetarian meal prep services",
+    secondaryKeywords: ["weekly food delivery Kathmandu", "portion control diet Nepal", "organic subscription meals", "healthy calorie delivery"],
+    metaDescription: "Save hours and stay on budget. Perfect options to find premium vegetarian meal prep services in Nepal with monthly subscription options.",
+    urlSlug: "/vegetarian-meal-prep-services-nepal-subscriptions",
+    readingTime: "15 min read",
+    type: "Transactional Intent"
+  },
+  {
+    day: 49,
+    title: "The Best Vegetarian Restaurants in Nepal Offering Gluten-Free Options",
+    primaryKeyword: "vegetarian restaurants in Nepal",
+    secondaryKeywords: ["gluten-free cafes Kathmandu", "celiac friendly restaurant Nepal", "organic vegetarian food Boudha", "healthy options stupa"],
+    metaDescription: "Avoid wheat safely. Discover the best vegetarian restaurants in Nepal offering highly safe, certified gluten-free dining options.",
+    urlSlug: "/best-vegetarian-restaurants-nepal-gluten-free-options",
+    readingTime: "16 min read",
+    type: "Commercial Intent"
+  },
+  {
+    day: 50,
+    title: "Top Nepali Vegetarian Recipe Apps Compared by Features and User Reviews",
+    primaryKeyword: "vegetarian recipe apps",
+    secondaryKeywords: ["cook at home app Nepal", "nepalese vegetarian cookbook mobile", "best cooking guide software", "healthy recipe apps Kathmandu"],
+    metaDescription: "Cook like a professional chef. We compare the top Nepali vegetarian recipe apps by their interactive tools and customer reviews.",
+    urlSlug: "/top-nepali-vegetarian-recipe-apps-features-reviews",
+    readingTime: "15 min read",
+    type: "Commercial Intent"
   }
 ];
 
@@ -395,4 +596,4 @@ export function getArticleByDay(day: number): Article {
   };
   return getSkeletonArticle(day, defaultMeta);
 }
-export const totalDaysList = Array.from({ length: 30 }, (_, i) => i + 1);
+export const totalDaysList = Array.from({ length: calendarMetadata.length }, (_, i) => i + 1);

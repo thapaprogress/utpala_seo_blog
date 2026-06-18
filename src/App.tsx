@@ -2415,6 +2415,26 @@ export default function App() {
                     ))}
                   </div>
                 </div>
+
+                <div className="p-2.5 bg-white border border-gray-200 rounded-lg shadow-sm">
+                  <span className="block text-[8px] uppercase text-gray-400 font-mono tracking-wider font-bold mb-1">MILESTONE 3 (CORE SEMANTICS)</span>
+                  <div className="flex flex-wrap gap-1">
+                    {['vegetarian', 'vegan', 'cafe', 'Boudha', 'Kathmandu', 'organic food', 'monastery', 'restaurant', 'buffet', 'local ingredients'].map((kw) => (
+                      <span 
+                        key={kw} 
+                        onClick={() => setSearchTerm(kw)} 
+                        className={`text-[9.5px] py-1 px-1.5 rounded font-mono cursor-pointer transition-all border ${
+                          checkKeywordInText(activeContentText, kw)
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-300 font-bold' 
+                            : 'bg-[#FAF9F6] text-gray-500 hover:bg-gray-100 border-gray-200'
+                        }`}
+                        title={checkKeywordInText(activeContentText, kw) ? `"${kw}" matches active draft body content!` : `Click to search for "${kw}"`}
+                      >
+                        {kw} {checkKeywordInText(activeContentText, kw) ? '✓' : ''}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 

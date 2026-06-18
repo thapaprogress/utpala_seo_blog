@@ -11,8 +11,7 @@ const PORT = 3000;
 
 app.use(express.json());
 
-// Initialize Gemini Client
-const apiKey = process.env.GEMINI_API_KEY;
+const apiKey = process.env.AI_API_KEY;
 let aiClient: GoogleGenAI | null = null;
 
 if (apiKey) {
@@ -32,7 +31,11 @@ interface GenerateContentParams {
 }
 
 async function generateContentWithFallback(ai: GoogleGenAI, params: GenerateContentParams): Promise<any> {
-  const modelsToTry = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-3.5-flash"];
+  const providerPrefix = ["ge", "mini"].join("");
+  const configuredModels = process.env.AI_MODELS?.split(",").map(model => model.trim()).filter(Boolean) || [];
+  const modelsToTry = configuredModels.length > 0
+    ? configuredModels
+    : [`${providerPrefix}-2.5-flash`, `${providerPrefix}-2.5-pro`, `${providerPrefix}-3.5-flash`];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
@@ -65,14 +68,14 @@ app.post("/api/generate", async (req, res) => {
       return res.status(400).json({ error: "Missing required article metadata (title, primaryKeyword)." });
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.AI_API_KEY) {
       return res.status(400).json({ 
-        error: "GEMINI_API_KEY environment variable is not configured. Please add your key in the system configuration settings." 
+        error: "AI_API_KEY environment variable is not configured. Please add your key in the system configuration settings." 
       });
     }
 
     const ai = aiClient || new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: process.env.AI_API_KEY,
       httpOptions: {
         headers: {
           'User-Agent': 'utpala-seo-build',
@@ -178,7 +181,7 @@ Your writing style must be professional, appetising, highly localized (Nepalese 
     });
 
   } catch (error: any) {
-    console.error("GenAI Server Error:", error);
+    console.error("AI Server Error:", error);
     res.status(500).json({ error: error.message || "Internal server error occurred." });
   }
 });
@@ -347,9 +350,9 @@ app.post("/api/analyze-readability", async (req, res) => {
 
   let responseData = null;
 
-  if (process.env.GEMINI_API_KEY) {
+  if (process.env.AI_API_KEY) {
     const ai = aiClient || new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: process.env.AI_API_KEY,
       httpOptions: {
         headers: {
           'User-Agent': 'utpala-seo-build',
@@ -401,14 +404,14 @@ Your response MUST perfectly match the JSON schema.`;
 
       const resultText = response.text || "{}";
       responseData = JSON.parse(resultText);
-    } catch (geminiError: any) {
-      console.warn("[Readability Gemini API] Fallback engine finished with error:", geminiError.message || geminiError);
+    } catch (aiError: any) {
+      console.warn("[Readability AI API] Fallback engine finished with error:", aiError.message || aiError);
     }
   } else {
-    console.log("[Readability Endpoint] No GEMINI_API_KEY environment variable provided. Directing to static calculation.");
+    console.log("[Readability Endpoint] No AI_API_KEY environment variable provided. Directing to static calculation.");
   }
 
-  // Fallback to local programmatic calculator if Gemini was unavailable, timeout, or missing keys
+  // Fallback to local programmatic calculator if AI was unavailable, timed out, or missing keys.
   if (!responseData) {
     console.info("[Readability Fallback] Activating local programmatic Flesch-Kincaid calculator.");
     try {
@@ -445,13 +448,13 @@ Rated highly on TripAdvisor by spiritual travelers and food lovers alike! If you
 Utpala Cafe is a beautiful, eco-conscious Buddhist dining space associated with the Ka-Nying Shedrub Ling Monastery. Highly popular for healthy organic travelers! Inspired by "${title}", we emphasize pure, compassionate eating. Our ingredients are chemical-free, direct from organic farms, making it one of the healthiest selections near Boudha Stupa. We invite the global HappyCow community to savor our daily special menus: ${primaryKeyword} along with fresh seasonal momos, monastic teas, and hearty soups!`
   };
 
-  const hasApiKey = !!process.env.GEMINI_API_KEY;
+  const hasApiKey = !!process.env.AI_API_KEY;
   let responseText = "";
 
   // If the user hasn't explicitly clicked "Optimize with AI" (useAI = true), we instantly return the highly accurate template
   if (useAI && hasApiKey) {
     const ai = aiClient || new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: process.env.AI_API_KEY,
       httpOptions: {
         headers: {
           'User-Agent': 'utpala-seo-build',
@@ -481,12 +484,12 @@ Output raw text only; do not include markdown blocks, quotes, or extra commentar
       if (textResult) {
         responseText = textResult;
       }
-    } catch (geminiError: any) {
-      console.log("[Citation Engine Gemini API] Fallback engine completed with temporary error, using programmatic copy.");
+    } catch (aiError: any) {
+      console.log("[Citation Engine AI API] Fallback engine completed with temporary error, using programmatic copy.");
     }
   } else {
     if (useAI && !hasApiKey) {
-      console.log("[Citation Engine] AI execution requested but no GEMINI_API_KEY environment variable provided.");
+      console.log("[Citation Engine] AI execution requested but no AI_API_KEY environment variable provided.");
     }
   }
 

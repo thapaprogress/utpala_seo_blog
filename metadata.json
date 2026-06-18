@@ -2,5 +2,5 @@
   "name": "Utpala Cafe SEO Content Engine",
   "description": "An elite SEO content architecture and article workspace designed for Utpala Cafe, Boudha, Kathmandu. Easily view, edit, optimize, and generate 30 days of high-ranking blog articles.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_AI_API"]
 }

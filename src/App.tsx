@@ -259,7 +259,7 @@ Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffe
     setIsEditing(true);
   };
 
-  // Call server-side Gemini Content generation
+  // Call server-side AI content generation
   const handleAIGenerate = async () => {
     setIsGenerating(true);
     setGenerationError(null);
@@ -757,7 +757,7 @@ Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffe
     return Math.min(score, 100);
   };
 
-  // Perform Gemini-powered readability and structure analysis
+  // Perform AI-powered readability and structure analysis
   const handleAnalyzeReadability = async () => {
     setIsAnalyzingReadability(true);
     setReadabilityError(null);
@@ -1491,7 +1491,7 @@ Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffe
                               <span className="font-display">Unlock Elite 3,000+ Words Optimization</span>
                             </h3>
                             <p className="text-xs text-gray-600 max-w-xl font-sans leading-relaxed">
-                              Instantly generate a highly-researched, deep-dive local SEO article featuring local Nepalese ingredient catalogs, monastery values, Boudhanath guidelines, and perfect keyword density. Powered by the Google Gemini server-side architect.
+                              Instantly generate a highly-researched, deep-dive local SEO article featuring local Nepalese ingredient catalogs, monastery values, Boudhanath guidelines, and perfect keyword density.
                             </p>
                           </div>
                           <button
@@ -1500,7 +1500,7 @@ Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffe
                             className="bg-[#F27D26] hover:bg-[#d66513] text-white px-4 py-2.5 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all flex items-center space-x-1.5 shrink-0 self-end md:self-auto uppercase tracking-wider font-mono border-b-2 border-orange-700 cursor-pointer"
                           >
                             {isGenerating ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
-                            <span>{isGenerating ? "Generating..." : "Generate with Gemini"}</span>
+                            <span>{isGenerating ? "Generating..." : "Generate Article"}</span>
                           </button>
                         </div>
                       )}
@@ -1512,7 +1512,7 @@ Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffe
                           <div className="space-y-1">
                             <span className="font-semibold block text-red-900">Content Architect Generation Fault</span>
                             <p className="text-gray-600 font-sans leading-relaxed">{generationError}</p>
-                            <span className="block text-[10px] text-gray-400 font-mono mt-2">Ensure process.env.GEMINI_API_KEY is configured in Settings &gt; Secrets.</span>
+                            <span className="block text-[10px] text-gray-400 font-mono mt-2">Ensure process.env.AI_API_KEY is configured in your hosting environment.</span>
                           </div>
                         </div>
                       )}
@@ -1904,7 +1904,7 @@ Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffe
                               <button
                                 onClick={() => loadAICitation(plat.id)}
                                 className="bg-[#F27D26]/10 hover:bg-[#F27D26]/18 text-[#F27D26] font-mono font-bold text-[9px] uppercase tracking-wider py-2 px-2.5 rounded-lg transition-all border border-[#F27D26]/25 cursor-pointer flex items-center justify-center space-x-1"
-                                title="Enrich description copy with live Gemini reasoning"
+                                title="Enrich description copy with live AI reasoning"
                                 disabled={isLoading}
                               >
                                 <Sparkles className="h-2.5 w-2.5 text-[#F27D26] animate-pulse" />
@@ -2345,7 +2345,7 @@ Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffe
                       <div className="text-center py-8 border border-dashed rounded-xl bg-gray-50 text-xs font-sans text-gray-400 space-y-1 flex flex-col items-center justify-center">
                         <Sparkles className="h-5 w-5 text-gray-300 mb-1" />
                         <span>Ready to run detailed copy diagnostics.</span>
-                        <span className="text-[10px] text-gray-350 font-mono">Requires Gemini API to build syllables and grade index values.</span>
+                        <span className="text-[10px] text-gray-350 font-mono">Run analysis to check syllable and grade index values.</span>
                       </div>
                     )}
                   </div>

@@ -57,11 +57,128 @@ export default function App() {
   const [readabilityResult, setReadabilityResult] = useState<any>(null);
   const [readabilityError, setReadabilityError] = useState<string | null>(null);
 
-  // New states for Local Citation engine
-  const [activeCitationPlatform, setActiveCitationPlatform] = useState<'google' | 'tripadvisor' | 'happycow'>('google');
-  const [citationText, setCitationText] = useState<string>('');
-  const [isGeneratingCitation, setIsGeneratingCitation] = useState<boolean>(false);
-  const [citationError, setCitationError] = useState<string | null>(null);
+  // New states for Local Citation engine with interactive USP mapping
+  const [selectedUSPs, setSelectedUSPs] = useState<string[]>(['monastery', 'stupa', 'organic']);
+  const [citationTexts, setCitationTexts] = useState<Record<'google' | 'tripadvisor' | 'happycow', string>>({
+    google: '',
+    tripadvisor: '',
+    happycow: ''
+  });
+  const [citationLoadingStates, setCitationLoadingStates] = useState<Record<'google' | 'tripadvisor' | 'happycow', boolean>>({
+    google: false,
+    tripadvisor: false,
+    happycow: false
+  });
+  const [citationErrors, setCitationErrors] = useState<Record<'google' | 'tripadvisor' | 'happycow', string | null>>({
+    google: null,
+    tripadvisor: null,
+    happycow: null
+  });
+
+  // Predefined USPs for Utpala Cafe
+  const AVAILABLE_USPS = [
+    { id: 'monastery', label: 'Monastic Stewardship', desc: '100% of profits fund Ka-Nying Shedrub Ling Monastery Buddhist education.' },
+    { id: 'stupa', label: 'Boudha Stupa Proximity', desc: 'Peaceful garden situated just a 3-minute stroll from the sacred Boudhanath Stupa.' },
+    { id: 'organic', label: '100% Organic Sourcing', desc: 'Chemical-free, seasonal vegetables sourced directly from local Nepalese cooperatives.' },
+    { id: 'buffet', label: 'Legendary Friday Night Buffet', desc: 'Weekly Rs. 450 unlimited organic buffet where community meets.' },
+    { id: 'nomad', label: 'Digital Nomad Friendly', desc: 'Dual-line commercial fiber Wi-Fi, plentiful power outlets, and quiet study zones.' },
+    { id: 'vegan', label: 'Hygienic Pure Veg / Vegan', desc: 'Strict Buddhist kitchen guidelines preventing cross-contamination and prioritizing wellness.' }
+  ];
+
+  const generateProgrammaticCitation = (platform: 'google' | 'tripadvisor' | 'happycow', pkw: string, selectedIds: string[]): string => {
+    const chosenUSPs = AVAILABLE_USPS.filter(u => selectedIds.includes(u.id));
+    const activeMeta = calendarMetadata.find(m => m.day === activeDay);
+    const title = activeMeta ? activeMeta.title : "Utpala Cafe";
+
+    const uspBulletText = chosenUSPs.map(u => `• ${u.label}: ${u.desc}`).join("\n");
+    const uspCheckText = chosenUSPs.map(u => `✓ ${u.label} - ${u.desc}`).join("\n");
+    const uspDashText = chosenUSPs.map(u => `- ${u.label} (${u.desc})`).join("\n");
+
+    if (platform === 'tripadvisor') {
+      return `⭐⭐⭐⭐⭐ Peaceful Zen Garden & Best Plant-Based Sanctuary in Kathmandu Valley!
+
+Planning an escape to Boudha, Kathmandu? Utpala Cafe is a tranquil sanctuary opposite Ka-Nying Shedrub Ling Monastery. Highly acclaimed for our pure vegetarian recipes, healthy community food, and amazing monastic service.
+
+Based on our community-voted theme: "${title}", we are proud to offer deep expertise in:
+${uspBulletText || "• Healthy Organic Food & Pure Plant-Based Cooking"}
+
+Whether you're visiting for our specialized "${pkw}" experience or seeking a clean, mindful corner in Kathmandu, Utpala will become your peaceful, sensory, and spiritual second home!`;
+    }
+
+    if (platform === 'google') {
+      return `🌸 Utpala Cafe (Boudha, Kathmandu) is a premier garden restaurant specializing in authentic, 100% organic vegetarian & vegan dining. Our current theme is: "${title}".
+
+Located just a 3-minute walking distance from the sacred Boudhanath Stupa, we prioritize local community health:
+${uspDashText || "- Authentic farm-to-table vegetarian menu"}
+
+Our core highlights include:
+- Specifically offering: "${pkw}"
+- Warm Nepalese hospitality & clean, quiet ambiance.
+
+Perfect for tourists, practitioners, and digital nomads seeking highly hygienic and ethical dining in Kathmandu. Visit our peaceful garden opposite the monastery!`;
+    }
+
+    // happycow
+    return `🌱 Utpala Cafe - 100% vegetarian & Eco-Mindful Garden Oasis near Boudha Stupa
+
+Savor compassionate, chemical-free dining at Utpala Cafe, associated with Ka-Nying Shedrub Ling Monastery. Dedicated to travelers looking for healthy vegan foods and mindful living:
+${uspCheckText || "✓ Traditional, clean, and delicious plant-based cooking"}
+
+Our chef's special is: "${pkw}" which matches the rich spiritual tradition of our neighborhood.
+
+Why our community loves us:
+Whether you are here to work remote with high-speed Wi-Fi, join our Friday buffet, or meditate in our serene garden, we promise clean preparation and pure ingredients. Join our global family!`;
+  };
+
+  // Re-calculate the programmatic citations instantly whenever day or selected USPs update
+  useEffect(() => {
+    const activeMeta = calendarMetadata.find(m => m.day === activeDay);
+    if (!activeMeta) return;
+    const pkw = activeMeta.primaryKeyword;
+
+    setCitationTexts({
+      google: generateProgrammaticCitation('google', pkw, selectedUSPs),
+      tripadvisor: generateProgrammaticCitation('tripadvisor', pkw, selectedUSPs),
+      happycow: generateProgrammaticCitation('happycow', pkw, selectedUSPs)
+    });
+  }, [activeDay, selectedUSPs]);
+
+  // AI-powered citation optimization
+  const loadAICitation = async (platform: 'google' | 'tripadvisor' | 'happycow') => {
+    setCitationLoadingStates(prev => ({ ...prev, [platform]: true }));
+    setCitationErrors(prev => ({ ...prev, [platform]: null }));
+    try {
+      const activeMeta = calendarMetadata.find(m => m.day === activeDay);
+      if (!activeMeta) return;
+
+      const chosenUSPsLabels = AVAILABLE_USPS.filter(u => selectedUSPs.includes(u.id)).map(u => u.label).join(", ");
+
+      const res = await fetch("/api/generate-citation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: activeMeta.title,
+          primaryKeyword: activeMeta.primaryKeyword,
+          secondaryKeywords: [chosenUSPsLabels, ...activeMeta.secondaryKeywords],
+          metaDescription: activeMeta.metaDescription,
+          day: activeMeta.day,
+          directory: platform,
+          useAI: true
+        })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Could not retrieve directory copy.");
+      }
+      setCitationTexts(prev => ({ ...prev, [platform]: data.citation || "" }));
+      showToast(`AI polished citation for ${platform === 'google' ? 'Google Maps' : platform === 'tripadvisor' ? 'TripAdvisor' : 'HappyCow'}!`);
+    } catch (err: any) {
+      console.error("Local citation system error:", err);
+      setCitationErrors(prev => ({ ...prev, [platform]: err.message || "Failed to load customized citations." }));
+    } finally {
+      setCitationLoadingStates(prev => ({ ...prev, [platform]: false }));
+    }
+  };
 
   // Initialize and load articles from localStorage (or fallback to preloaded)
   useEffect(() => {
@@ -81,47 +198,6 @@ export default function App() {
     }
     setArticles(loadedArticles);
   }, []);
-
-  // Automated business profile citation fetching
-  const loadCitation = async (platform: 'google' | 'tripadvisor' | 'happycow', useAI: boolean = false) => {
-    setIsGeneratingCitation(true);
-    setCitationError(null);
-    try {
-      const activeMeta = calendarMetadata.find(m => m.day === activeDay);
-      if (!activeMeta) return;
-
-      const res = await fetch("/api/generate-citation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: activeMeta.title,
-          primaryKeyword: activeMeta.primaryKeyword,
-          secondaryKeywords: activeMeta.secondaryKeywords,
-          metaDescription: activeMeta.metaDescription,
-          day: activeMeta.day,
-          directory: platform,
-          useAI
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Could not retrieve directory copy.");
-      }
-      setCitationText(data.citation || "");
-    } catch (err: any) {
-      console.error("Local citation system error:", err);
-      setCitationError(err.message || "Failed to load customized citations.");
-    } finally {
-      setIsGeneratingCitation(false);
-    }
-  };
-
-  // Load custom directory quotation whenever active day or chosen platform changes (with default programmatic templates)
-  useEffect(() => {
-    if (activeDay) {
-      loadCitation(activeCitationPlatform, false);
-    }
-  }, [activeDay, activeCitationPlatform]);
 
   const currentArticle = articles[activeDay] || getArticleByDay(activeDay);
 
@@ -1650,91 +1726,194 @@ export default function App() {
                   </div>
 
                   {/* LOCAL CITATIONS GENERATOR SECTION */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4.5 space-y-4 shadow-sm text-left">
-                    <div className="border-b border-gray-200 pb-3">
-                      <h4 className="text-xs font-display font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1.5 font-bold">
-                        <Sparkles className="h-4 w-4 text-[#F27D26]" />
-                        <span className="text-gray-900">LOCAL BUSINESS CITATIONS GENERATOR</span>
-                      </h4>
-                      <p className="text-[11px] text-gray-500 mt-0.5 font-sans">
-                        Instantly draft optimized business directory descriptions customized to the unique thematic tone of **Day {activeDay}: {currentArticle.title}**.
-                      </p>
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 space-y-5 shadow-sm text-left">
+                    <div className="border-b border-gray-200/80 pb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                      <div>
+                        <h4 className="text-xs font-display font-bold text-[#F27D26] uppercase tracking-wider flex items-center gap-1.5 font-bold">
+                          <Award className="h-4 w-4 text-[#F27D26]" />
+                          <span className="text-gray-900">PRE-FORMATTED CITATION & DIRECTORY BUILDER</span>
+                        </h4>
+                        <p className="text-[11px] text-gray-500 mt-1 font-sans">
+                          Instantly construct optimized business directory listing templates combining your live SEO focus keywords and active Unique Selling Points (USPs).
+                        </p>
+                      </div>
+                      <span className="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-200 py-1 px-2.5 rounded-full font-mono font-bold uppercase tracking-wider">
+                        Active Article: Day {activeDay}
+                      </span>
                     </div>
 
-                    {/* Directory Selection Tabs */}
-                    <div className="flex border-b border-gray-200 gap-1">
-                      {(['google', 'tripadvisor', 'happycow'] as const).map((platform) => {
-                        const label = platform === 'google' 
-                          ? 'Google Business Profile' 
-                          : platform === 'tripadvisor' 
-                          ? 'TripAdvisor' 
-                          : 'HappyCow (Eco Vegan)';
+                    {/* SEO Context & Configurator - 2 Column Dashboard block */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
+                      <div className="lg:col-span-4 space-y-3 lg:border-r lg:border-r-gray-200 lg:pr-5 border-b lg:border-b-0 pb-4 lg:pb-0">
+                        <span className="block text-[9px] uppercase text-gray-400 font-mono tracking-wider font-bold">SEO Keyword Injector</span>
+                        <div className="space-y-1.5 text-left">
+                          <div className="text-[10px] text-gray-500 font-sans leading-relaxed">
+                            The primary SEO keyword will automatically be embedded to raise local search relevance:
+                          </div>
+                          <div className="p-2.5 bg-amber-500/10 border border-amber-300 text-amber-900 rounded-lg text-xs font-mono font-bold text-center break-all select-all flex items-center justify-between gap-1">
+                            <span className="truncate">{currentArticle.primaryKeyword}</span>
+                            <span className="text-[8px] bg-amber-500 text-white font-mono uppercase px-1 rounded shrink-0 font-bold">ACTIVE</span>
+                          </div>
+                          <div className="text-[9px] text-gray-400 italic font-mono leading-tight">
+                            * Dynamic local search crawler index optimization
+                          </div>
+                        </div>
+                      </div>
 
-                        const isPlatformActive = activeCitationPlatform === platform;
+                      <div className="lg:col-span-8 space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="block text-[9px] uppercase text-gray-400 font-mono tracking-wider font-bold">Interactive USPs Selector (Choose 1 or more)</span>
+                          <span className="text-[9px] font-mono text-gray-500 font-bold">{selectedUSPs.length} Selected</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {AVAILABLE_USPS.map((usp) => {
+                            const isSelected = selectedUSPs.includes(usp.id);
+                            return (
+                              <button
+                                key={usp.id}
+                                onClick={() => {
+                                  if (isSelected) {
+                                    if (selectedUSPs.length > 1) {
+                                      setSelectedUSPs(prev => prev.filter(id => id !== usp.id));
+                                    } else {
+                                      showToast("Keep at least one USP selected to preserve citation length!");
+                                    }
+                                  } else {
+                                    setSelectedUSPs(prev => [...prev, usp.id]);
+                                  }
+                                }}
+                                className={`p-2.5 rounded-lg border text-left cursor-pointer transition-all select-none flex items-start gap-2.5 outline-none ${
+                                  isSelected
+                                    ? 'bg-emerald-50 bg-opacity-70 border-emerald-400 text-emerald-950 shadow-sm'
+                                    : 'bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-600'
+                                }`}
+                              >
+                                <div className={`h-4 w-4 rounded border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
+                                  isSelected ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white border-gray-300'
+                                }`}>
+                                  {isSelected && <Check className="h-3 w-3" />}
+                                </div>
+                                <div className="space-y-0.5">
+                                  <div className="text-[11px] font-bold font-sans tracking-tight leading-none">{usp.label}</div>
+                                  <div className="text-[9.5px] text-gray-500 line-clamp-2 leading-tight mt-0.5">{usp.desc}</div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Pre-Formatted Copy Panels */}
+                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 pt-1">
+                      {([
+                        { 
+                          id: 'google', 
+                          title: 'Google Maps / GBP',
+                          subtitle: 'Feature-heavy, trust-driven, geo-optimized local listing text.',
+                          colorClass: 'border-blue-200 bg-blue-50/5',
+                          badgeColor: 'bg-blue-600 text-white',
+                          icon: '📍'
+                        },
+                        { 
+                          id: 'tripadvisor', 
+                          title: 'TripAdvisor Profile',
+                          subtitle: 'Review-hungry tourist focus with high geographic tags.',
+                          colorClass: 'border-emerald-200 bg-emerald-50/5',
+                          badgeColor: 'bg-emerald-650 text-white',
+                          icon: '⭐'
+                        },
+                        { 
+                          id: 'happycow', 
+                          title: 'HappyCow (Eco Vegan)',
+                          subtitle: 'Pure plant-based compassion, green dining highlights.',
+                          colorClass: 'border-green-200 bg-green-50/5',
+                          badgeColor: 'bg-green-600 text-white',
+                          icon: '🌱'
+                        }
+                      ] as const).map((plat) => {
+                        const citationText = citationTexts[plat.id] || '';
+                        const isLoading = citationLoadingStates[plat.id];
+                        const err = citationErrors[plat.id];
+                        const wordCount = citationText.split(/\s+/).filter(Boolean).length;
+                        const hasAIUpdate = !citationText.includes("Planning an escape to") && !citationText.includes("located just steps from");
 
                         return (
-                          <button
-                            key={platform}
-                            onClick={() => setActiveCitationPlatform(platform)}
-                            className={`px-3 py-1.5 text-xs font-mono font-bold uppercase transition-all rounded-t-lg cursor-pointer outline-none border ${
-                              isPlatformActive
-                                ? 'bg-white border-gray-200 border-b-white text-orange-600 -mb-[1px]'
-                                : 'bg-gray-100/70 hover:bg-gray-150 border-transparent text-gray-500 hover:text-gray-900'
-                            }`}
+                          <div 
+                            key={plat.id} 
+                            className={`border rounded-xl p-4 flex flex-col justify-between space-y-3.5 shadow-sm bg-white transition-all hover:bg-neutral-50/5 hover:shadow ${plat.colorClass}`}
                           >
-                            {label}
-                          </button>
-                        );
-                      })}
-                    </div>
+                            <div className="space-y-1">
+                              <div className="flex justify-between items-center bg-gray-50 -mx-4 -mt-4 px-4 py-2.5 rounded-t-xl border-b border-gray-200">
+                                <div className="flex items-center space-x-1.5">
+                                  <span className="text-xs">{plat.icon}</span>
+                                  <span className="text-[11px] font-display font-bold text-gray-900 tracking-tight">{plat.title}</span>
+                                </div>
+                                <span className={`text-[8.5px] font-mono font-bold leading-none px-1.5 py-0.5 rounded ${plat.badgeColor}`}>
+                                  {hasAIUpdate ? 'AI OPTIMIZED' : 'DYNAMIC'}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-gray-500 font-sans italic mt-1.5 leading-snug">
+                                {plat.subtitle}
+                              </p>
+                            </div>
 
-                    {/* Citations Preview Box */}
-                    <div className="bg-white border border-gray-200 rounded-xl p-4 space-y-3 relative shadow-inner">
-                      {isGeneratingCitation ? (
-                        <div className="flex flex-col items-center justify-center py-8 space-y-2">
-                          <svg className="animate-spin h-5 w-5 text-[#F27D26]" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                          </svg>
-                          <span className="text-xs font-mono text-gray-500">Drafting personalized directory listing profile...</span>
-                        </div>
-                      ) : citationError ? (
-                        <div className="text-xs text-red-600 bg-red-50 border border-red-200 p-3 rounded-lg font-mono">
-                          {citationError}
-                        </div>
-                      ) : (
-                        <div className="space-y-3.5">
-                          <p className="text-xs text-gray-700 font-sans leading-relaxed tracking-wide select-all whitespace-pre-wrap bg-gray-50/50 p-4.5 rounded-xl border border-gray-150/80 font-medium">
-                            {citationText}
-                          </p>
+                            {/* Main Box */}
+                            <div className="bg-gray-50 rounded-lg p-3 border border-gray-200 h-[170px] overflow-y-auto relative flex flex-col">
+                              {isLoading ? (
+                                <div className="flex flex-col items-center justify-center my-auto py-8 space-y-2">
+                                  <svg className="animate-spin h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                  </svg>
+                                  <span className="text-[10px] font-mono text-gray-500">Drafting template...</span>
+                                </div>
+                              ) : err ? (
+                                <span className="text-[10px] text-red-600 bg-red-50 p-2 rounded block font-mono">
+                                  {err}
+                                </span>
+                              ) : (
+                                <span className="text-[11px] text-gray-700 whitespace-pre-wrap leading-relaxed select-all block break-words text-left font-sans font-medium">
+                                  {citationText}
+                                </span>
+                              )}
+                            </div>
 
-                          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-t border-gray-100 pt-3">
-                            <span className="text-[10px] text-gray-400 font-mono italic max-w-lg leading-snug">
-                              * Customized with context: "{currentArticle.primaryKeyword}". High-density semantic keys rank your TripAdvisor or Google profile at the top of local queries.
-                            </span>
-                            <div className="flex items-center gap-2 shrink-0 self-end">
+                            <div className="flex items-center justify-between border-t border-gray-150 pt-2 text-[9px] font-mono text-gray-400">
+                              <span>(~{wordCount} words)</span>
+                              <span className="text-[#F27D26] font-bold">100% Compliant</span>
+                            </div>
+
+                            {/* Buttons and copy handlers */}
+                            <div className="flex items-center gap-1.5 pt-0.5">
                               <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(citationText);
-                                  showToast(`Copied ${activeCitationPlatform.toUpperCase()} profile text!`);
+                                onClick={async () => {
+                                  try {
+                                    await navigator.clipboard.writeText(citationText);
+                                    showToast(`Copied ${plat.title} citation template!`);
+                                  } catch {
+                                    showToast("Copy failed, please select and copy manually.");
+                                  }
                                 }}
-                                className="bg-[#111111] hover:bg-neutral-800 text-white font-mono font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all cursor-pointer flex items-center space-x-1.5 shadow"
+                                className="flex-1 bg-neutral-950 hover:bg-neutral-800 text-white font-mono font-bold text-[9px] uppercase tracking-wider py-2 px-2.5 rounded-lg transition-all cursor-pointer flex items-center justify-center space-x-1 shadow-sm"
                               >
                                 <Copy className="h-3 w-3" />
-                                <span>Copy profile</span>
+                                <span>Copy Text</span>
                               </button>
+
                               <button
-                                onClick={() => loadCitation(activeCitationPlatform, true)}
-                                className="bg-[#F27D26]/10 hover:bg-[#F27D26]/20 text-[#F27D26] font-mono font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 rounded-lg transition-all border border-[#F27D26]/25 cursor-pointer flex items-center space-x-1.5"
-                                title="Optimize with live Gemini model generation"
+                                onClick={() => loadAICitation(plat.id)}
+                                className="bg-[#F27D26]/10 hover:bg-[#F27D26]/18 text-[#F27D26] font-mono font-bold text-[9px] uppercase tracking-wider py-2 px-2.5 rounded-lg transition-all border border-[#F27D26]/25 cursor-pointer flex items-center justify-center space-x-1"
+                                title="Enrich description copy with live Gemini reasoning"
+                                disabled={isLoading}
                               >
-                                <Sparkles className="h-3 w-3 animate-pulse" />
-                                <span>Optimize with AI</span>
+                                <Sparkles className="h-2.5 w-2.5 text-[#F27D26] animate-pulse" />
+                                <span>AI Polish</span>
                               </button>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        );
+                      })}
                     </div>
                   </div>
 
